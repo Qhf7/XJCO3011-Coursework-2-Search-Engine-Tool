@@ -1,6 +1,15 @@
 # XJCO3011 Coursework 2
 
-Search engine tool for `quotes.toscrape.com`.
+This project is a Python command-line search engine for `quotes.toscrape.com`.
+Its purpose is to demonstrate the core stages of a simple search engine workflow:
+
+- crawling the pages of a target website
+- extracting visible text content from each page
+- building an inverted index with term statistics
+- saving and loading the compiled index from disk
+- retrieving pages for single-word and multi-word queries
+
+The coursework focuses on web crawling, inverted indexing, query processing, testing, and command-line interaction.
 
 ## Features
 
@@ -12,13 +21,38 @@ Search engine tool for `quotes.toscrape.com`.
 - The index stores document metadata, term frequency, and token positions
 - The crawler respects a 6-second politeness window between successive requests
 
-## Install
+## Requirements
+
+- Python `3.12` or later is recommended
+- Internet access is required for the `build` command because it crawls `quotes.toscrape.com`
+- The compiled index is stored in `data/index.json`
+
+## Installation and Setup
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/Qhf7/XJCO3011-Coursework-2-Search-Engine-Tool.git
+cd XJCO3011-Coursework-2-Search-Engine-Tool
+```
+
+2. Install dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## Run
+3. Confirm the required packages are available:
+
+- `requests`
+- `beautifulsoup4`
+- `pytest`
+
+These are listed in [`requirements.txt`](/Users/qiaohongfei/Desktop/Web/cw2/requirements.txt).
+
+## Running the Application
+
+Start the command-line interface with:
 
 ```bash
 python src/main.py
@@ -26,17 +60,104 @@ python src/main.py
 
 If your shell points `python3` to a broken system interpreter, use `python` from your active conda environment instead.
 
-Example commands:
+After the shell starts, you can enter commands interactively.
+
+## Usage Examples for All Four Commands
+
+### 1. `build`
+
+Use `build` to crawl the target website and create the inverted index.
 
 ```text
-build
-load
-print nonsense
-find good friends
-quit
+search> build
 ```
 
-You can also run one command directly:
+What it does:
+
+- visits all reachable pages on `quotes.toscrape.com`
+- waits at least 6 seconds between successive requests
+- extracts visible page text
+- creates the inverted index
+- saves the compiled result to `data/index.json`
+
+### 2. `load`
+
+Use `load` to reload a previously saved index from disk.
+
+```text
+search> load
+```
+
+What it does:
+
+- reads `data/index.json`
+- restores the index into memory
+- allows searching without running the crawler again
+
+### 3. `print <word>`
+
+Use `print` to inspect the inverted index entry for exactly one word.
+
+```text
+search> print nonsense
+```
+
+What it returns:
+
+- the pages where the word appears
+- the term frequency in each page
+- the token positions stored for that word
+
+### 4. `find <terms>`
+
+Use `find` to retrieve pages that contain a search query.
+
+Single-word example:
+
+```text
+search> find indifference
+```
+
+Multi-word example:
+
+```text
+search> find good friends
+```
+
+What it does:
+
+- tokenizes the query
+- normalizes it to lowercase
+- applies AND semantics for multi-word queries
+- returns only pages that contain every query term
+
+## Complete Interactive Example
+
+The following example shows a typical end-to-end session:
+
+```text
+search> build
+Fetching http://quotes.toscrape.com/ ...
+...
+Built index for 10 pages and saved to data/index.json.
+
+search> load
+Loaded index from data/index.json.
+
+search> print nonsense
+Index for 'nonsense':
+- http://quotes.toscrape.com/page/2/ | freq=1 | positions=[...]
+- http://quotes.toscrape.com/page/7/ | freq=1 | positions=[...]
+
+search> find good friends
+Pages for 'good friends':
+- http://quotes.toscrape.com/ | Quotes to Scrape | matches=...
+
+search> quit
+Bye.
+```
+
+You can also run one command directly without entering interactive mode:
 
 ```bash
 python src/main.py build
@@ -66,13 +187,15 @@ Multi-word search uses AND semantics, so a page is only returned if it contains 
 - `print` requires exactly one word
 - `load` reports an error if the index file does not exist
 
-## Tests
+## Testing Instructions
+
+Run the automated test suite with:
 
 ```bash
 pytest
 ```
 
-The tests cover:
+What the tests cover:
 
 - crawling the next-page chain
 - politeness-window enforcement
@@ -81,6 +204,14 @@ The tests cover:
 - index save/load round-tripping
 - single-word and multi-word search
 - CLI command behavior and edge cases
+
+The test files are:
+
+- `tests/test_crawler.py`
+- `tests/test_indexer.py`
+- `tests/test_search.py`
+
+These tests are designed to confirm both normal behaviour and common failure scenarios.
 
 ## Output file
 
