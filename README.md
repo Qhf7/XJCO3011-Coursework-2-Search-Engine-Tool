@@ -11,6 +11,12 @@ Its purpose is to demonstrate the core stages of a simple search engine workflow
 
 The coursework focuses on web crawling, inverted indexing, query processing, testing, and command-line interaction.
 
+## Video Demonstration
+
+Coursework demonstration video:
+
+https://youtu.be/X_50nlo5Q3g
+
 ## Features
 
 - `build` crawls the site and saves an inverted index
